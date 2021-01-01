@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Gold</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ninjagoldstyle.css' %}">
+    <!-- <style>
+       
+    </style> -->
+</head>
+<body>
+    <div id="container">
+        <!-- Header div for the gold count -->
+        <div id="gold">
+            <p> Your Gold: </p>
+            <p id="gold-count"> {{ request.session.gold }} </p>
+            <p> Number of moves made: {{ request.session.num_moves }}</p>
+            <form action="/reset" method="POST">
+                {% csrf_token %}
+                <button> Start Over </button>
+            </form>
+            <div id="winning_cond">
+                <form action="/store" method="POST">
+                    {% csrf_token %}
+                    <p>Choose your winning condition:</p>
+                    <label for="amount_of_gold">Amount of gold:</label>
+                    <input type="number" name="amount_of_gold">
+                    <label for="num_of_move">Number of move:</label>
+                    <input type="number" name="num_of_moves">
+                    <button> Confirm winning condition </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main div for different choices -->
+        <div id="choice-block">
+            <div class="choice">
+                <h2> Farm </h2>
+                <p> (earns 10-20 golds) </p>
+                <form action = "/gold/farm" method = "POST">
+                    {% csrf_token %}
+                    <button name="farm"> Find Gold! </button>
+                </form>
+            </div>
+
+            <div class="choice">
+                <h2> Cave </h2>
+                <p> (earns 5-10 golds) </p>
+                <form action = "/gold/cave" method = "POST">
+                    {% csrf_token %}
+                    <button name="cave"> Find Gold! </button>
+                </form>
+            </div>
+
+            <div class="choice">
+                <h2> House </h2>
+                <p> (earns 2-5 golds) </p>
+                <form action = "/gold/house" method = "POST">
+                    {% csrf_token %}
+                    <button name="house"> Find Gold! </button>
+                </form>
+            </div>
+
+            <div class="choice">
+                <h2> Casino </h2>
+                <p> (earns/takes 0-50 golds) </p>
+                <form action = "/gold/casino" method = "POST">
+                    {% csrf_token %}
+                    <button name="casino"> Find Gold! </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Div for log display -->
+        <div id="activity">
+            <p> Activities: </p>
+            <div id = "activity-box">
+                {% for earned_gold in request.session.history %}
+                    {% for location in request.session.location_history %}
+                        {% if forloop.counter == forloop.parentloop.counter %}
+                            {% if earned_gold > 0 %}
+                                <p style="color:green"> Earned {{earned_gold}} golds at the {{ location }}! </p>
+                            {% elif earned_gold < 0 %}
+                                <p style="color:red"> Lost {{earned_gold}} golds at the casino... </p>
+                            {% else %}
+                                <p style="color:black"> Earned 0 gold </p>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+
+
+        {% if request.session.did_win %}
+        <div id="win">
+            You have won!
+        </div>
+        {% endif %}
+
+        {% if request.session.did_lose %}
+        <div id="lose">
+            You have lost...
+        </div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
